@@ -1,0 +1,3 @@
+[submodule "pyquaticus"]
+	path = pyquaticus
+	url = https://github.com/mit-ll-trusted-autonomy/pyquaticus.git
