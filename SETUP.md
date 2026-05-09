@@ -15,8 +15,12 @@ O MCTF utiliza o ambiente de simulação de jogos Pyquaticus. O Pyquaticus é um
 ### Opção 1: Utilizando Miniconda (Recomendado)
 
 1. Instale o Miniconda a partir [deste link](https://docs.anaconda.com/miniconda/miniconda-install/).
-2. Navegue até o repositório clonado do Pyquaticus.
-3. Execute:
+2. Adicione o Miniconda ao System PATH:
+    - C:\Users\<user>\miniconda3
+    - C:\Users\<user>\miniconda3\Scripts
+    - C:\Users\<user>\miniconda3\Library\bin
+3. Navegue até o repositório clonado do Pyquaticus.
+4. Execute:
    `./setup-conda-env.sh light`
    `./setup-conda-env.sh full` (recomendado, inclui RLlib)
 
@@ -32,15 +36,19 @@ O MCTF utiliza o ambiente de simulação de jogos Pyquaticus. O Pyquaticus é um
 ## Configuração no Windows
 
 1. Instale o Miniconda a partir [deste link](https://docs.anaconda.com/miniconda/miniconda-install/).
-2. Clone o repositório GitHub do Pyquaticus.
-3. Navegue até o repositório.
-4. `git checkout mctf2026` (OBS: `mctf2026` é a branch que será utilizada para a competição de 2026, e não a `main`)
-5. Remova a linha 56 (`pymoos==2022.1`) do arquivo `pyproject.toml`.
-6. Execute:
+2. Adicione o Miniconda ao System PATH:
+    - C:\Users\<user>\miniconda3
+    - C:\Users\<user>\miniconda3\Scripts
+    - C:\Users\<user>\miniconda3\Library\bin
+3. Clone o repositório GitHub do Pyquaticus.
+4. Navegue até o repositório.
+5. `git checkout mctf2026` (OBS: `mctf2026` é a branch que será utilizada para a competição de 2026, e não a `main`)
+6. Remova a linha 56 (`pymoos==2022.1`) do arquivo `pyproject.toml`.
+7. Execute:
    `./setup-conda-env.sh light` (WSL)
    ou
    `./setup-conda-env.sh full` (inclui RLlib)
-7. Ou instale manualmente:
+8. Ou instale manualmente:
    `pip install -e .[torch,ray]`
    ou
    `pip install -e .`
