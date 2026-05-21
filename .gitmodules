@@ -1,0 +1,3 @@
+[submodule "pyquaticus"]
+	path = pyquaticus
+	url = https://github.com/Danrley-Ruan-Saquetti/pyquaticus-mctf26.git
