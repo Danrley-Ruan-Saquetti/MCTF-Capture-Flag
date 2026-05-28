@@ -1,5 +1,9 @@
 # Campeonato MCTF - UDESC - Modelagem de Agentes
 
+- Caso não tenha sido clonado o submodulo `pyquaticus`, clone com o seguinte comando:
+    ```bash
+    git submodule update --init --recursive
+    ```
 - Para configurar o ambiente, siga o [SETUP.md](./SETUP.md).
 - Para executar a simulação, rode o script [test_heuristic_3v3.py](./test_heuristic_3v3.py).
 
