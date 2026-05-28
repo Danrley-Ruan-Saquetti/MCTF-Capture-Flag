@@ -7,19 +7,6 @@ from pyquaticus.moos_bridge.pyquaticus_moos_bridge import PyQuaticusMoosBridge
 _DEFEND_THREAT_THRESHOLD = 2
 
 class HybridAgent(Heuristic_CTF_Agent):
-    """
-    Agente híbrido com papéis dinâmicos.
-
-    A cada passo, avalia o estado global para decidir entre atacar e defender:
-
-    - Carregando a bandeira → sempre ataca (volta para casa).
-    - Companheiro de equipe carrega a bandeira → ataca (pressão adicional).
-    - ≥2 inimigos não-tagueados no nosso lado → defende.
-    - Inimigo carrega nossa bandeira E há ameaça no nosso lado → defende.
-    - Caso contrário → ataca.
-
-    O papel é calculado a cada step; não há memória de papel entre steps.
-    """
 
     def __init__(
         self,
@@ -79,7 +66,6 @@ class HybridAgent(Heuristic_CTF_Agent):
         return "attack"
 
     def _count_threats(self, global_state) -> int:
-        """Conta inimigos não-tagueados que cruzaram para o nosso lado do campo."""
         count = 0
 
         for enemy_id in self.opponent_ids:

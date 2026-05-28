@@ -17,15 +17,6 @@ _DEFENSE_PERIMETER_IN_METERS = 25.0
 _WALL_PROXIMITY = 7.0
 
 class Defender(BaseDefender):
-    """
-    Agente dedicado à defesa da bandeira.
-
-    Comportamentos prioritários (modo hard):
-    1. Inimigo tem nossa bandeira → intercepta na rota de fuga.
-    2. Inimigo está perto da bandeira → corre direto para ele.
-    3. Inimigo está no perímetro defensivo → posiciona-se entre o inimigo e a bandeira.
-    4. Sem ameaça imediata → patrulha entre a bandeira e o meio-campo.
-    """
 
     def __init__(
         self,
@@ -73,7 +64,6 @@ class Defender(BaseDefender):
         return self.action_from_vector(ag_vect, 1)
 
     def _closest_threat(self, global_state):
-        """Retorna (agent_id, local_rect_pos) do inimigo não-tagueado mais próximo da bandeira."""
         best_id = None
         best_dist = float("inf")
         best_loc = np.zeros(2)

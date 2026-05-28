@@ -1,18 +1,3 @@
-"""
-Teste funcional: time heurístico azul (Attacker + HybridAgent + Defender) vs
-time vermelho heurístico hard (Heuristic_CTF_Agent).
-
-Uso:
-    python test_heuristic_3v3.py
-    python test_heuristic_3v3.py --render
-    python test_heuristic_3v3.py --episodes 5
-    python test_heuristic_3v3.py --speedup 20
-
-Layout dos agentes (CompPyquaticusEnv, team_size=3):
-    Blue team: agent_0 (Attacker), agent_1 (HybridAgent), agent_2 (Defender)
-    Red  team: agent_3, agent_4, agent_5 (Heuristic_CTF_Agent hard)
-"""
-
 import argparse
 import sys
 import os
@@ -49,7 +34,6 @@ def make_env(render: bool, speedup: int | None) -> CompPyquaticusEnv:
     return CompPyquaticusEnv(config_dict=config, render_mode=render_mode, reward_config={})
 
 def make_blue_team(env: CompPyquaticusEnv):
-    """Cria os três agentes do time azul após o reset do ambiente."""
     return {
         "agent_0": Attacker("agent_0", env, continuous=False, mode="hard"),
         "agent_1": HybridAgent("agent_1", env, continuous=False, mode="hard"),
@@ -57,7 +41,6 @@ def make_blue_team(env: CompPyquaticusEnv):
     }
 
 def make_red_team(env: CompPyquaticusEnv, mode: str):
-    """Cria os três agentes do time vermelho (oponentes heurísticos)."""
     return {
         "agent_3": Heuristic_CTF_Agent("agent_3", env, continuous=False, mode=mode),
         "agent_4": Heuristic_CTF_Agent("agent_4", env, continuous=False, mode=mode),
@@ -81,7 +64,6 @@ def run_episode(
     red_agents: dict,
     episode: int,
 ) -> tuple[int, int]:
-    """Executa um episódio completo. Retorna (blue_captures, red_captures)."""
     obs, info = env.reset()
 
     all_agents = {**blue_agents, **red_agents}

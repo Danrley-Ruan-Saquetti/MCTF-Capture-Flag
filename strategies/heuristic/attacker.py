@@ -12,14 +12,6 @@ from pyquaticus.envs.pyquaticus import PyQuaticusEnv
 from pyquaticus.moos_bridge.pyquaticus_moos_bridge import PyQuaticusMoosBridge
 
 class Attacker(BaseAttacker):
-    """
-    Agente dedicado à captura de bandeira.
-
-    Comportamentos prioritários (modo hard):
-    1. Carregando a bandeira → sprint para casa esquivando inimigos agressivamente.
-    2. Companheiro carrega a bandeira → corre chamariz no território inimigo.
-    3. Nenhuma bandeira capturada → persegue a bandeira inimiga com evasão.
-    """
 
     _CARRY_AVOID_THRESH = 45.0
     _ATTACK_AVOID_THRESH = 35.0
