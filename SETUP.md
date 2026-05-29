@@ -44,15 +44,20 @@ O MCTF utiliza o ambiente de simulação de jogos Pyquaticus. O Pyquaticus é um
    `conda create -n py310 python=3.10`
 4. Rode o comando `conda init` e reinicie o terminal
 5. E então confira a versão do python com `python --version` (deve ser 3.10.x)
-6. Clone o repositório GitHub do Pyquaticus.
-7. Navegue até o repositório.
+6. Clone o repositório MCTF-Capture-Flag com submódulos:
+   `git clone --recurse-submodules <url-do-repo>`
+   Ou, se já clonou sem submódulos: `git submodule update --init`
+7. Navegue até o submódulo do Pyquaticus:
+   `cd pyquaticus`
 8. `git checkout mctf2026` (OBS: `mctf2026` é a branch que será utilizada para a competição de 2026, e não a `main`)
-9. Remova a linha 56 (`pymoos==2022.1`) do arquivo `pyproject.toml`.
-10. Execute:
-    `./setup-conda-env.sh light` (WSL)
-    ou
-    `./setup-conda-env.sh full` (inclui RLlib)
-11. Ou instale manualmente:
+9. No arquivo `pyquaticus/moos_bridge/pyquaticus_moos_bridge.py`, substitua `import pymoos` por um bloco try/except para compatibilidade com Windows (onde `pymoos` não está disponível):
+   ```python
+   try:
+       import pymoos
+   except ImportError:
+       pymoos = None
+   ```
+10. Volte para a raiz do projeto e instale o Pyquaticus manualmente:
     `pip install -e .[torch,ray]`
     ou
     `pip install -e .`
