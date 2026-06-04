@@ -49,6 +49,7 @@ class Attacker(BaseAttacker):
         if self.my_team_has_flag:
             goal = rel_bearing_to_local_unit_rect(self.opp_flag_bearing)
             avoid = get_avoid_vect(obstacles, avoid_threshold=self._ATTACK_AVOID_THRESH)
+
             return self.action_from_vector(1.25 * goal + avoid, 1)
 
         goal = rel_bearing_to_local_unit_rect(self.opp_flag_bearing)
@@ -60,8 +61,8 @@ class Attacker(BaseAttacker):
         return self.action_from_vector(1.25 * goal + avoid, 1)
 
     def _carry_to_capture_zone(self, info, obstacles):
-        """Navega para o ponto de captura mais próximo em vez de flag_home."""
         global_state = info[self.id]["global_state"]
+
         if not isinstance(global_state, dict):
             global_state = self.state_normalizer.unnormalized(global_state)
 
@@ -75,15 +76,18 @@ class Attacker(BaseAttacker):
 
         goal = 1.5 * rel_bearing_to_local_unit_rect(bearing)
         avoid = get_avoid_vect(obstacles, avoid_threshold=self._CARRY_AVOID_THRESH)
+
         return self.action_from_vector(goal + avoid, 1)
 
     def _wall_obstacles(self):
         obstacles = []
+
         for a, b in [(0, 2), (1, 3)]:
             if self.wall_distances[a] < self._WALL_PROXIMITY and -90 < self.wall_bearings[a] < 90:
                 obstacles.append((self.wall_distances[a], self.wall_bearings[a]))
             elif self.wall_distances[b] < self._WALL_PROXIMITY and -90 < self.wall_bearings[b] < 90:
                 obstacles.append((self.wall_distances[b], self.wall_bearings[b]))
+
         return obstacles
 
     def _nearly_cancelled(self, goal, avoid):
@@ -97,6 +101,8 @@ class Attacker(BaseAttacker):
     def _boundary_escape(self):
         top = self.wall_distances[0]
         bot = self.wall_distances[2]
+
         if top > 1.25 * bot:
             return dist_rel_bearing_to_local_rect(top, self.wall_bearings[0])
+
         return dist_rel_bearing_to_local_rect(bot, self.wall_bearings[2])

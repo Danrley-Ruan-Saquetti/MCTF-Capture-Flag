@@ -71,6 +71,7 @@ class HybridAgent(Heuristic_CTF_Agent):
 
         goal = 1.5 * rel_bearing_to_local_unit_rect(bearing)
         avoid = get_avoid_vect(self.opp_team_pos, avoid_threshold=_CARRY_AVOID_THRESH)
+
         return self.action_from_vector(goal + avoid, 1)
 
     def _choose_role(self, global_state) -> str:

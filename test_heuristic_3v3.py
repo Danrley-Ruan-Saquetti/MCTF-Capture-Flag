@@ -1,6 +1,8 @@
 import argparse
 import sys
 import os
+import pygame
+from pygame import KEYDOWN, QUIT, K_ESCAPE
 
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "pyquaticus"))
@@ -42,9 +44,9 @@ def make_blue_team(env: CompPyquaticusEnv):
 
 def make_red_team(env: CompPyquaticusEnv, mode: str):
     return {
-        "agent_3": Attacker("agent_3", env, continuous=False, mode=mode),
-        "agent_4": Attacker("agent_4", env, continuous=False, mode=mode),
-        "agent_5": Attacker("agent_5", env, continuous=False, mode=mode),
+        "agent_3": Heuristic_CTF_Agent("agent_3", env, continuous=False, mode=mode),
+        "agent_4": Heuristic_CTF_Agent("agent_4", env, continuous=False, mode=mode),
+        "agent_5": Heuristic_CTF_Agent("agent_5", env, continuous=False, mode=mode),
     }
 
 def print_results(episode: int, state: dict, blue_score: int, red_score: int):
@@ -71,6 +73,13 @@ def run_episode(
     truncated = {agent_id: False for agent_id in all_agents}
 
     while True:
+        for event in pygame.event.get():
+            if event.type == QUIT or (
+                event.type == KEYDOWN and event.key == K_ESCAPE
+            ):
+                env.close()
+                sys.exit()
+
         actions = {}
 
         for agent_id, agent in all_agents.items():
