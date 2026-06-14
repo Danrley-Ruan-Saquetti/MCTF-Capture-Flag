@@ -37,16 +37,16 @@ def make_env(render: bool, speedup: int | None) -> CompPyquaticusEnv:
 
 def make_blue_team(env: CompPyquaticusEnv):
     return {
-        "agent_0": Attacker("agent_0", env, continuous=False, mode="hard"),
-        "agent_1": HybridAgent("agent_1", env, continuous=False, mode="hard"),
-        "agent_2": Defender("agent_2", env, continuous=False, mode="hard"),
+        "agent_0": Attacker("agent_0", env, continuous=True, mode="hard"),
+        "agent_1": HybridAgent("agent_1", env, continuous=True, mode="hard"),
+        "agent_2": Defender("agent_2", env, continuous=True, mode="hard"),
     }
 
 def make_red_team(env: CompPyquaticusEnv, mode: str):
     return {
-        "agent_3": Heuristic_CTF_Agent("agent_3", env, continuous=False, mode=mode),
-        "agent_4": Heuristic_CTF_Agent("agent_4", env, continuous=False, mode=mode),
-        "agent_5": Heuristic_CTF_Agent("agent_5", env, continuous=False, mode=mode),
+        "agent_3": Heuristic_CTF_Agent("agent_3", env, continuous=True, mode=mode),
+        "agent_4": Heuristic_CTF_Agent("agent_4", env, continuous=True, mode=mode),
+        "agent_5": Heuristic_CTF_Agent("agent_5", env, continuous=True, mode=mode),
     }
 
 def print_results(episode: int, state: dict, blue_score: int, red_score: int):
@@ -73,12 +73,13 @@ def run_episode(
     truncated = {agent_id: False for agent_id in all_agents}
 
     while True:
-        for event in pygame.event.get():
-            if event.type == QUIT or (
-                event.type == KEYDOWN and event.key == K_ESCAPE
-            ):
-                env.close()
-                sys.exit()
+        if pygame.display.get_init():
+            for event in pygame.event.get():
+                if event.type == QUIT or (
+                    event.type == KEYDOWN and event.key == K_ESCAPE
+                ):
+                    env.close()
+                    sys.exit()
 
         actions = {}
 
