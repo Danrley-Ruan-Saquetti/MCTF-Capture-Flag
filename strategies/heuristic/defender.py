@@ -13,8 +13,8 @@ from pyquaticus.envs.pyquaticus import PyQuaticusEnv
 from pyquaticus.moos_bridge.pyquaticus_moos_bridge import PyQuaticusMoosBridge
 from pyquaticus.utils.utils import dist
 
-_DEFENSE_PERIMETER_IN_METERS = 25.0
-_WALL_PROXIMITY = 7.0
+DEFENSE_PERIMETER = 25.0
+WALL_PROXIMITY = 7.0
 
 class Defender(BaseDefender):
 
@@ -33,77 +33,90 @@ class Defender(BaseDefender):
         if self.mode != "hard":
             return super().compute_action(obs, info)
 
+        global_state = self._read_global_state(info)
+
+        if self.opp_team_has_flag:
+            movement_vector = rel_bearing_to_local_unit_rect(self.my_flag_bearing)
+        else:
+            movement_vector = self._guard_vector(global_state)
+
+        wall_obstacles = self._wall_obstacles()
+
+        if wall_obstacles:
+            movement_vector = movement_vector + get_avoid_vect(wall_obstacles)
+
+        return self.action_from_vector(movement_vector, 1)
+
+    def _read_global_state(self, info):
+        """Estado global desnormalizado do ambiente."""
         global_state = info[self.id]["global_state"]
 
         if not isinstance(global_state, dict):
             global_state = self.state_normalizer.unnormalized(global_state)
 
-        wall_obstacles = self._wall_obstacles()
-
-        if self.opp_team_has_flag:
-            ag_vect = rel_bearing_to_local_unit_rect(self.my_flag_bearing)
-        else:
-            ag_vect = self._guard_vector(global_state)
-
-        if wall_obstacles:
-            ag_vect = ag_vect + get_avoid_vect(wall_obstacles)
-
-        return self.action_from_vector(ag_vect, 1)
+        return global_state
 
     def _guard_vector(self, global_state):
-        enemy_id, enemy_loc, on_our_side = self._closest_threat(global_state)
+        threat_id, threat_location, threat_on_our_side = self._closest_threat(global_state)
 
-        if enemy_id is None:
+        if threat_id is None:
             return rel_bearing_to_local_unit_rect(self.my_flag_bearing)
 
-        if on_our_side:
-            return enemy_loc
+        if threat_on_our_side:
+            return threat_location
 
-        enemy_dist_to_flag = dist(np.array(self.my_flag_loc), enemy_loc)
+        flag_location = np.array(self.my_flag_loc)
+        enemy_distance_to_flag = dist(flag_location, threat_location)
 
-        if enemy_dist_to_flag < _DEFENSE_PERIMETER_IN_METERS * 0.5:
-            return enemy_loc
+        if enemy_distance_to_flag < DEFENSE_PERIMETER * 0.5:
+            return threat_location
 
-        unit = unit_vect_between_points(np.array(self.my_flag_loc), enemy_loc)
-        intercept_dist = min(enemy_dist_to_flag * 0.45, _DEFENSE_PERIMETER_IN_METERS)
+        direction_to_enemy = unit_vect_between_points(flag_location, threat_location)
+        intercept_distance = min(enemy_distance_to_flag * 0.45, DEFENSE_PERIMETER)
 
-        return np.array(self.my_flag_loc) + intercept_dist * unit
+        return flag_location + intercept_distance * direction_to_enemy
 
     def _closest_threat(self, global_state):
-        best_id = None
-        best_dist = float("inf")
-        best_loc = np.zeros(2)
-        best_on_our_side = False
 
-        for enemy_id, pos in self.opp_team_pos_dict.items():
+        closest_id = None
+        closest_distance = float("inf")
+        closest_location = np.zeros(2)
+        closest_on_our_side = False
+        flag_location = np.array(self.my_flag_loc)
+
+        for enemy_id, polar_position in self.opp_team_pos_dict.items():
             if global_state.get((enemy_id, "is_tagged"), True):
                 continue
 
-            enemy_loc = dist_rel_bearing_to_local_rect(pos[0], pos[1])
-            d = dist(np.array(self.my_flag_loc), enemy_loc)
+            enemy_location = dist_rel_bearing_to_local_rect(polar_position[0], polar_position[1])
+            distance_to_flag = dist(flag_location, enemy_location)
 
-            if d < best_dist:
-                best_dist = d
-                best_id = enemy_id
-                best_loc = enemy_loc
-                best_on_our_side = not global_state.get((enemy_id, "on_side"), True)
+            if distance_to_flag < closest_distance:
+                closest_distance = distance_to_flag
+                closest_id = enemy_id
+                closest_location = enemy_location
+                closest_on_our_side = not global_state.get((enemy_id, "on_side"), True)
 
-        if best_id is None and self.opp_team_pos_dict:
-            best_id = min(self.opp_team_pos_dict, key=lambda k: self.opp_team_pos_dict[k][0])
-            pos = self.opp_team_pos_dict[best_id]
-            best_loc = dist_rel_bearing_to_local_rect(pos[0], pos[1])
-            best_on_our_side = False
+        if closest_id is None and self.opp_team_pos_dict:
+            closest_id = min(
+                self.opp_team_pos_dict, key=lambda enemy: self.opp_team_pos_dict[enemy][0]
+            )
+            polar_position = self.opp_team_pos_dict[closest_id]
+            closest_location = dist_rel_bearing_to_local_rect(polar_position[0], polar_position[1])
+            closest_on_our_side = False
 
-        return best_id, best_loc, best_on_our_side
+        return closest_id, closest_location, closest_on_our_side
 
     def _wall_obstacles(self):
         obstacles = []
-        pairs = [(0, 2), (1, 3)]
 
-        for a, b in pairs:
-            if self.wall_distances[a] < _WALL_PROXIMITY and -90 < self.wall_bearings[a] < 90:
-                obstacles.append((self.wall_distances[a], self.wall_bearings[a]))
-            elif self.wall_distances[b] < _WALL_PROXIMITY and -90 < self.wall_bearings[b] < 90:
-                obstacles.append((self.wall_distances[b], self.wall_bearings[b]))
+        for near_index, far_index in [(0, 2), (1, 3)]:
+            for wall_index in (near_index, far_index):
+                is_close = self.wall_distances[wall_index] < WALL_PROXIMITY
+                is_ahead = -90 < self.wall_bearings[wall_index] < 90
+
+                if is_close and is_ahead:
+                    obstacles.append((self.wall_distances[wall_index], self.wall_bearings[wall_index]))
+                    break
 
         return obstacles
