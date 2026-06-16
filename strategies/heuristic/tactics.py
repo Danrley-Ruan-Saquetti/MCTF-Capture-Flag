@@ -7,8 +7,8 @@ from pyquaticus.base_policies.utils import (
 )
 from pyquaticus.utils.utils import angle180
 
-CARRY_GOAL_WEIGHT = 1.5
-CARRY_AVOID_THRESHOLD = 55.0
+CARRY_GOAL_WEIGHT = 2.5
+CARRY_AVOID_THRESHOLD = 22.0
 SAFE_CARRY_GOAL_WEIGHT = 2.0
 
 def nearest_capture_corner(capture_corners, agent_position):

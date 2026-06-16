@@ -58,8 +58,15 @@ class Attacker(BaseAttacker):
         return global_state
 
     def _carry_action(self, global_state):
-        threats = untagged_enemy_obstacles(self.opponent_ids, self.opp_team_pos, global_state)
+        threats = untagged_enemy_obstacles(
+            self.opponent_ids, self.opp_team_pos, global_state, only_tagging_capable=True
+        )
         movement_vector = carry_home_vector(self, global_state, self.capture_corners, threats)
+
+        wall_obstacles = self._wall_obstacles()
+        if wall_obstacles:
+            movement_vector = movement_vector + get_avoid_vect(wall_obstacles)
+
         return self.action_from_vector(movement_vector, 1)
 
     def _approach_action(self, global_state):

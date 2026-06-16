@@ -48,15 +48,15 @@ def make_environment(arguments):
 
 def make_red_team(env, difficulty):
     return {
-        agent_id: Heuristic_CTF_Agent(agent_id, env, continuous=False, mode=difficulty)
+        agent_id: Heuristic_CTF_Agent(agent_id, env, continuous=True, mode=difficulty)
         for agent_id in RED_AGENT_IDS
     }
 
 def make_heuristic_blue_team(env):
     return {
-        "agent_0": Attacker("agent_0", env, continuous=False, mode="hard"),
-        "agent_1": HybridAgent("agent_1", env, continuous=False, mode="hard"),
-        "agent_2": Defender("agent_2", env, continuous=False, mode="hard"),
+        "agent_0": Attacker("agent_0", env, continuous=True, mode="hard"),
+        "agent_1": HybridAgent("agent_1", env, continuous=True, mode="hard"),
+        "agent_2": Defender("agent_2", env, continuous=True, mode="hard"),
     }
 
 def latest_checkpoint(directory="ray_tests"):

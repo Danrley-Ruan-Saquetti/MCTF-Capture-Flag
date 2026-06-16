@@ -13,8 +13,9 @@ from pyquaticus.envs.pyquaticus import PyQuaticusEnv
 from pyquaticus.moos_bridge.pyquaticus_moos_bridge import PyQuaticusMoosBridge
 from pyquaticus.utils.utils import dist
 
-DEFENSE_PERIMETER = 25.0
+DEFENSE_PERIMETER = 30.0
 WALL_PROXIMITY = 7.0
+INTERCEPT_FRACTION = 0.7
 
 class Defender(BaseDefender):
 
@@ -68,11 +69,11 @@ class Defender(BaseDefender):
         flag_location = np.array(self.my_flag_loc)
         enemy_distance_to_flag = dist(flag_location, threat_location)
 
-        if enemy_distance_to_flag < DEFENSE_PERIMETER * 0.5:
+        if enemy_distance_to_flag < DEFENSE_PERIMETER:
             return threat_location
 
         direction_to_enemy = unit_vect_between_points(flag_location, threat_location)
-        intercept_distance = min(enemy_distance_to_flag * 0.45, DEFENSE_PERIMETER)
+        intercept_distance = min(enemy_distance_to_flag * INTERCEPT_FRACTION, DEFENSE_PERIMETER)
 
         return flag_location + intercept_distance * direction_to_enemy
 

@@ -7,7 +7,7 @@ from pyquaticus.moos_bridge.pyquaticus_moos_bridge import PyQuaticusMoosBridge
 from .attacker import Attacker
 from .tactics import count_invaders
 
-INVADERS_TO_DEFEND = 2
+INVADERS_TO_DEFEND = 1
 
 class HybridAgent(Heuristic_CTF_Agent):
 
