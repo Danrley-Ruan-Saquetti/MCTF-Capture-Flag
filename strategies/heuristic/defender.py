@@ -49,7 +49,6 @@ class Defender(BaseDefender):
         return self.action_from_vector(movement_vector, 1)
 
     def _read_global_state(self, info):
-        """Estado global desnormalizado do ambiente."""
         global_state = info[self.id]["global_state"]
 
         if not isinstance(global_state, dict):
@@ -78,7 +77,6 @@ class Defender(BaseDefender):
         return flag_location + intercept_distance * direction_to_enemy
 
     def _closest_threat(self, global_state):
-
         closest_id = None
         closest_distance = float("inf")
         closest_location = np.zeros(2)
